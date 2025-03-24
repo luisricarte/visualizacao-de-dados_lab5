@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Volume de chuva acumulada na Fazenda Carnaúba por ano em um período de 10 anos (2014 a 2023);</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+  <script>
+    
+    const dadosCSV = `ano,total_chuva_mm,dias_chuva_mais_5mm,dias_chuva_mais_10mm
+2013,280.0,14,9
+2014,404.6,18,15
+2015,386.7,16,9
+2016,295,17,10
+2017,211.5,11,5
+2018,764.8,28,21
+2019,497.9,25,16
+2020,591.3,19,11
+2021,388.5,19,11
+2022,938.6,37,24
+2023,376.6,15,13
+`; 
+
+    function criarGrafico() {
+      const linhas = dadosCSV.split('\n');
+      const anos = [];
+      const totaisChuva = [];
+
+      let total_chuva = 0
+      for (let i = 1; i < linhas.length; i++) {
+        const valores = linhas[i].split(',');
+        if (valores.length >= 2) {
+          total_chuva = total_chuva + parseFloat(valores[1])
+          anos.push(valores[0]);
+          totaisChuva.push(total_chuva.toFixed(2));
+        }
+      }
+
+
+      const chartDom = document.getElementById('grafico');
+      const myChart = echarts.init(chartDom);
+      const option = {
+        title: {
+          text: 'Volume de chuva acumulada na Fazenda Carnaúba por ano em um período de 10 anos (2014 a 2023)',
+          subtext: 'Acompanhe o crescimento ao longo do tempo em mm'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          },
+        },
+        xAxis: {
+          type: 'category',
+          data: anos,
+        },
+        yAxis: {
+          type: 'value',
+          
+        },
+        series: [{
+          data: totaisChuva,
+          type: 'bar'
+        }]
+      };
+      myChart.setOption(option);
+    }
+
+    window.onload = criarGrafico;
+  </script>
+</head>
+<body>
+  <h1></h1>
+  <div id="grafico" style="width: 900px; height: 700px;"></div>
+</body>
+</html>
