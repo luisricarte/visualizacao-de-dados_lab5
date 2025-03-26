@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>
+            Variação da chuva acumulada na Fazenda Carnaúba (2014-2023)
+        </title>
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+        <script>
+            const dadosCSV = `ano,total_chuva_mm,dias_chuva_mais_5mm,dias_chuva_mais_10mm
+2013,280.0,14,9
+2014,404.6,18,15
+2015,386.7,16,9
+2016,295,17,10
+2017,211.5,11,5
+2018,764.8,28,21
+2019,497.9,25,16
+2020,591.3,19,11
+2021,388.5,19,11
+2022,938.6,37,24
+2023,376.6,15,13
+`;
+
+            function criarGrafico() {
+                const linhas = dadosCSV.split("\n");
+                const anos = [];
+                const variacoes = [];
+                const totais = [];
+
+                for (let i = 2; i < linhas.length; i++) {
+                    const valoresAtual = linhas[i].split(",");
+                    const valoresAnterior = linhas[i - 1].split(",");
+
+                    if (
+                        valoresAtual.length >= 2 &&
+                        valoresAnterior.length >= 2
+                    ) {
+                        const ano = valoresAtual[0];
+                        const chuvaAtual = parseFloat(valoresAtual[1]);
+                        const chuvaAnterior = parseFloat(valoresAnterior[1]);
+                        const variacao = (chuvaAtual - chuvaAnterior).toFixed(
+                            2
+                        );
+
+                        anos.push(ano);
+                        variacoes.push(variacao);
+                        totais.push(chuvaAtual);
+                    }
+                }
+
+                const chartDom = document.getElementById("grafico");
+                const myChart = echarts.init(chartDom);
+                const option = {
+                    title: {
+                        text: "Variação da chuva acumulada na Fazenda Carnaúba (2014-2023)",
+                        subtext:
+                            "Diferença da chuva em relação ao ano anterior (mm)",
+                        left: "center",
+                    },
+                    tooltip: {
+                        trigger: "axis",
+                        axisPointer: {type: "line"},
+                        formatter: function (params) {
+                            let data = params[0];
+                            return `${data.name}: ${
+                                data.value
+                            } mm <br/> Total Medido: ${
+                                totais[data.dataIndex]
+                            } mm`;
+                        },
+                    },
+                    dataZoom: [
+                        {
+                            type: "slider",
+                            xAxisIndex: 0,
+                            start: 0,
+                            end: 100,
+                        },
+                        {
+                            type: "inside",
+                            xAxisIndex: 0,
+                            start: 0,
+                            end: 100,
+                        },
+                    ],
+                    xAxis: {
+                        type: "category",
+                        data: anos,
+                        name: "Ano",
+                    },
+                    yAxis: {
+                        type: "value",
+                        name: "Variação (mm)",
+                        axisLabel: {formatter: "{value} mm"},
+                    },
+                    series: [
+                        {
+                            data: variacoes,
+                            type: "line",
+                            areaStyle: {},
+                            smooth: true,
+                            symbol: "circle",
+                            itemStyle: {color: "#5470c6"},
+                        },
+                    ],
+                };
+
+                myChart.setOption(option);
+            }
+
+            window.onload = criarGrafico;
+        </script>
+    </head>
+    <body>
+        <div id="grafico" style="width: 900px; height: 700px"></div>
+    </body>
+</html>
